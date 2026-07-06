@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>弓道 的中記録</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="的中記録">
+<meta name="theme-color" content="#e8e2d3">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23e8e2d3'/%3E%3Ccircle cx='16' cy='16' r='11' fill='%23f6f2e9' stroke='%2324211c' stroke-width='1.4'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%2324211c' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='2.2' fill='%2324211c'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --washi:#e8e2d3; --washi2:#f3efe4; --mato:#f6f2e9;
+    --sumi:#24211c; --ai:#334155; --shu:#c8402c; --line:#cbc3b2;
+    --hit:#c8402c; --miss:#4a4640;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; height:100%;}
+  body{
+    background:var(--washi); color:var(--sumi);
+    font-family:system-ui,-apple-system,"Hiragino Sans","Yu Gothic",sans-serif;
+    display:flex; flex-direction:column; height:100dvh; overflow:hidden;
+    font-variant-numeric:tabular-nums;
+  }
+  header{padding:10px 16px 6px; display:flex; align-items:baseline; gap:10px;}
+  .brand{display:flex; align-items:center; gap:8px;}
+  .seal{width:6px; height:26px; background:var(--shu); border-radius:1px;}
+  h1{font-family:"Hiragino Mincho ProN","Yu Mincho",serif; font-size:19px; margin:0; letter-spacing:.06em;}
+  .date{font-size:12px; color:var(--ai);}
+  .hd-right{margin-left:auto; display:flex; flex-direction:column; align-items:flex-end; gap:2px;}
+  .name{width:140px; text-align:right; border:none; border-bottom:1px dashed var(--line); background:transparent; color:var(--sumi); font-family:inherit; font-size:14px; padding:2px 0;}
+  .name:focus{outline:none; border-bottom-color:var(--shu);}
+  .name::placeholder{color:var(--ai); opacity:.7;}
+  .stats{display:flex; padding:2px 16px 6px;}
+  .stat{flex:1; text-align:center;}
+  .stat .n{font-size:28px; font-weight:650; line-height:1;}
+  .stat .n.shu{color:var(--shu);}
+  .stat .k{font-size:11px; color:var(--ai); letter-spacing:.06em; margin-top:3px;}
+  .stat + .stat{border-left:1px solid var(--line);}
+  .field-wrap{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2px 14px 0; min-height:0;}
+  .field{position:relative; width:min(84vw,42dvh); aspect-ratio:1; touch-action:manipulation;}
+  svg{width:100%; height:100%; display:block;}
+  #marks{pointer-events:none;}
+  .hint{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:"Hiragino Mincho ProN",serif; font-size:15px; color:var(--ai); text-align:center;
+    background:rgba(232,226,211,.5); pointer-events:none; padding:0 24px; line-height:1.6;}
+  .undertarget{display:flex; align-items:center; justify-content:center; gap:10px; margin-top:8px; font-size:13px; color:var(--ai); min-height:18px;}
+  .tendency b{color:var(--sumi); font-weight:650;}
+  .chips{display:flex; gap:8px; justify-content:center; margin-top:9px; flex-wrap:wrap;}
+  .chip{flex:0 0 auto; min-height:36px; padding:0 14px; border:1px solid var(--line); border-radius:18px; background:var(--washi2); color:var(--ai); font-size:13px; font-weight:600; font-family:inherit; cursor:pointer;}
+  .chip.on{background:var(--sumi); color:var(--washi2); border-color:var(--sumi);}
+  .chip:active{transform:translateY(1px);}
+  @keyframes pop{from{transform:scale(.2);opacity:0;} to{transform:scale(1);opacity:1;}}
+  .mk{transform-box:fill-box; transform-origin:center;}
+  .mk.new{animation:pop .18s ease-out;}
+  @media (prefers-reduced-motion:reduce){ .mk.new{animation:none;} }
+  .pad{padding:6px 14px calc(12px + env(safe-area-inset-bottom));}
+  .row{display:flex; gap:10px; margin-top:9px;}
+  button{
+    flex:1; min-height:54px; border:1px solid var(--line); border-radius:14px;
+    background:var(--washi2); color:var(--sumi); font-size:15px; font-weight:600;
+    font-family:inherit; letter-spacing:.02em; cursor:pointer; touch-action:manipulation;
+  }
+  button:active{transform:translateY(1px); background:#eae4d6;}
+  button .sub{display:block; font-size:11px; color:var(--ai); font-weight:500; margin-top:2px;}
+  .ghost{background:transparent; border-style:dashed;}
+  .undo{flex:.7;}
+  .runbar{display:flex; align-items:center; justify-content:center; gap:6px; margin-top:11px;
+    font-size:14px; color:var(--ai);}
+  .runbar b{color:var(--sumi); font-size:17px; font-weight:700;}
+  .commit{width:100%; min-height:62px; margin-top:6px; background:var(--shu); border-color:var(--shu); color:#fff; font-size:17px; border-radius:16px;}
+  .commit:active{background:#b3381f;}
+  .commit .sub{color:#fbe6e0;}
+  .commit:disabled{background:#d9cfbe; border-color:var(--line); color:#8c8474;}
+  .commit:disabled .sub{color:#9a9282;}
+  .sheet{position:fixed; inset:0; background:rgba(20,18,15,.5); display:none; align-items:flex-end; z-index:9;}
+  .sheet.open{display:flex;}
+  .card{background:var(--washi2); width:100%; border-radius:18px 18px 0 0; padding:18px 18px calc(20px + env(safe-area-inset-bottom)); max-height:82dvh; overflow:auto;}
+  .card h2{font-family:"Hiragino Mincho ProN",serif; margin:0 0 4px; font-size:17px;}
+  .card p{margin:0 0 10px; font-size:13px; color:var(--ai);}
+  textarea{width:100%; height:200px; border:1px solid var(--line); border-radius:10px; padding:10px; font-family:ui-monospace,Menlo,monospace; font-size:12px; background:#fff; color:var(--sumi); resize:none;}
+  .toast{position:fixed; left:50%; bottom:110px; transform:translateX(-50%); background:var(--sumi); color:#f3efe4; padding:9px 16px; border-radius:20px; font-size:13px; opacity:0; transition:opacity .2s; pointer-events:none; z-index:20; white-space:nowrap;}
+  .toast.show{opacity:1;}
+  .preview{width:100%; border:1px solid var(--line); border-radius:10px; display:block; margin-bottom:8px; background:#fff;}
+  .txt{margin:6px 0 2px;}
+  .txt summary{font-size:13px; color:var(--ai); cursor:pointer; padding:6px 0; list-style:revert;}
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand"><div class="seal"></div><h1>弓道 的中記録</h1></div>
+    <div class="hd-right">
+      <input id="name" class="name" placeholder="名前（なまえ）" maxlength="24" autocomplete="name" autocapitalize="words">
+      <div class="date" id="date">—</div>
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><div class="n" id="s-shot">0</div><div class="k">射数（しゃすう）</div></div>
+    <div class="stat"><div class="n shu" id="s-hit">0</div><div class="k">中（あたり）</div></div>
+    <div class="stat"><div class="n" id="s-rate">—</div><div class="k">的中率</div></div>
+    <div class="stat"><div class="n" id="s-tachi">0</div><div class="k">立（たち）</div></div>
+  </div>
+
+  <div class="field-wrap">
+    <div class="field" id="field">
+      <svg viewBox="-1.6 -1.6 3.2 3.2" id="svg">
+        <rect x="-1.55" y="-1.55" width="3.1" height="3.1" fill="none" stroke="var(--line)" stroke-width="0.02" stroke-dasharray="0.08 0.08" rx="0.12"/>
+        <g id="face-kasumi">
+          <circle cx="0" cy="0" r="1.0" fill="var(--mato)" stroke="var(--sumi)" stroke-width="0.03"/>
+          <circle cx="0" cy="0" r="0.66" fill="none" stroke="var(--sumi)" stroke-width="0.02"/>
+          <circle cx="0" cy="0" r="0.33" fill="none" stroke="var(--sumi)" stroke-width="0.02"/>
+          <circle cx="0" cy="0" r="0.09" fill="var(--sumi)"/>
+        </g>
+        <g id="face-hoshi" style="display:none">
+          <circle cx="0" cy="0" r="1.0" fill="var(--mato)" stroke="var(--sumi)" stroke-width="0.03"/>
+          <circle cx="0" cy="0" r="0.2" fill="var(--sumi)"/>
+        </g>
+        <g id="aim" style="display:none">
+          <line x1="0" y1="-1.12" x2="0" y2="1.12" stroke="var(--ai)" stroke-width="0.016" stroke-dasharray="0.05 0.045"/>
+          <line x1="-1.12" y1="0" x2="1.12" y2="0" stroke="var(--ai)" stroke-width="0.016" stroke-dasharray="0.05 0.045"/>
+        </g>
+        <g id="ghosts"></g>
+        <g id="marks"></g>
+      </svg>
+      <div class="hint" id="hint">この立の矢を<br>タップして入力（にゅうりょく）</div>
+    </div>
+    <div class="undertarget">
+      <span class="tendency" id="tendency"></span>
+    </div>
+    <div class="chips">
+      <button class="chip" id="c-face">星的にする</button>
+      <button class="chip" id="c-aim">狙い線（ねらいせん）</button>
+      <button class="chip" id="c-hist">履歴を隠す</button>
+    </div>
+  </div>
+
+  <div class="pad">
+    <div class="row">
+      <button class="ghost" id="btn-export">書き出し<span class="sub">記録をコピー</span></button>
+      <button class="ghost" id="btn-new">新しい稽古<span class="sub">保存して開始</span></button>
+    </div>
+    <div class="row">
+      <button id="btn-off">枠外（わくがい）<span class="sub">的を外した矢</span></button>
+      <button class="undo" id="btn-undo">戻す<span class="sub">直前を取消</span></button>
+    </div>
+    <div class="runbar" id="runbar">この立（たち）: <b id="run-shot">0</b> 射 ・ <b id="run-hit">0</b> 中</div>
+    <button class="commit" id="btn-commit" disabled>この立を記録<span class="sub">合計に加えて的をクリア</span></button>
+  </div>
+
+  <div class="sheet" id="sheet">
+    <div class="card">
+      <h2>この稽古の記録</h2>
+      <img id="export-img" class="preview" alt="記録図（きろくず）">
+      <div class="row">
+        <button class="commit" style="margin-top:0" id="btn-share">画像を保存・共有</button>
+      </div>
+      <details class="txt">
+        <summary>テキストで見る（Claudeに貼り付け用）</summary>
+        <textarea id="export-text" readonly></textarea>
+        <div class="row"><button class="ghost" id="btn-copy">テキストをコピー</button></div>
+      </details>
+      <div class="row"><button class="ghost" id="btn-close">閉じる</button></div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+<script>
+const mem={};
+const hasClaude = (typeof window!=='undefined' && window.storage);   // running inside Claude
+const Store={
+  async get(k){
+    if(hasClaude){ try{ const r=await window.storage.get(k); return r?JSON.parse(r.value):null; }catch(e){ return null; } }
+    try{ const v=localStorage.getItem(k); return v?JSON.parse(v):null; }catch(e){ return (k in mem)?mem[k]:null; }
+  },
+  async set(k,v){ mem[k]=v;
+    if(hasClaude){ try{ await window.storage.set(k,JSON.stringify(v)); }catch(e){} return; }
+    try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){}
+  }
+};
+const KEY='kyudo_session_v2';
+let sess={ date:todayStr(), runs:[], cur:[] };   // run = [shot]; shot={dx,dy,hit,off}
+let opts={ star:false, aim:false, hist:true, name:'' };
+const $=s=>document.querySelector(s);
+const field=$('#field');
+
+function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+
+field.addEventListener('click',e=>{
+  const r=field.getBoundingClientRect();
+  const vx=-1.6+((e.clientX-r.left)/r.width)*3.2;
+  const vy=-1.6+((e.clientY-r.top)/r.height)*3.2;
+  const hit=(vx*vx+vy*vy)<=1.0;
+  sess.cur.push({dx:+vx.toFixed(3),dy:+vy.toFixed(3),hit,off:false});
+  save(); render(true);
+});
+$('#btn-off').addEventListener('click',()=>{ sess.cur.push({dx:0,dy:0,hit:false,off:true}); save(); render(true); });
+$('#btn-undo').addEventListener('click',()=>{
+  if(sess.cur.length){ sess.cur.pop(); }
+  else if(sess.runs.length){ sess.cur=sess.runs.pop(); toast('前の立を戻しました'); }
+  save(); render();
+});
+$('#btn-commit').addEventListener('click',()=>{
+  if(!sess.cur.length) return;
+  const n=sess.cur.length, h=sess.cur.filter(x=>x.hit).length;
+  sess.runs.push(sess.cur); sess.cur=[];
+  save(); render(); toast('記録：'+n+'射 '+h+'中');
+});
+$('#btn-new').addEventListener('click',async()=>{
+  if((sess.runs.length||sess.cur.length) && !confirm('今の稽古を保存して、新しい記録を始めますか？')) return;
+  if(sess.cur.length){ sess.runs.push(sess.cur); sess.cur=[]; }
+  if(sess.runs.length){ const arch=(await Store.get('kyudo_archive_v2'))||[]; arch.push(sess); await Store.set('kyudo_archive_v2',arch); }
+  sess={date:todayStr(),runs:[],cur:[]}; save(); render(); toast('新しい稽古を開始');
+});
+function saveOpts(){ Store.set('kyudo_opts_v1', opts); }
+function applyOpts(){
+  document.getElementById('face-kasumi').style.display = opts.star?'none':'';
+  document.getElementById('face-hoshi').style.display = opts.star?'':'none';
+  document.getElementById('aim').style.display = opts.aim?'':'none';
+  const cf=$('#c-face'); cf.textContent=opts.star?'霞的にする':'星的にする'; cf.classList.toggle('on',opts.star);
+  $('#c-aim').classList.toggle('on',opts.aim);
+  const ch=$('#c-hist'); ch.textContent=opts.hist?'履歴を隠す':'履歴を表示'; ch.classList.toggle('on',!opts.hist);
+  const ne=$('#name'); if(ne && document.activeElement!==ne) ne.value=opts.name||'';
+}
+$('#name').addEventListener('input',e=>{ opts.name=e.target.value; saveOpts(); });
+$('#c-face').addEventListener('click',()=>{ opts.star=!opts.star; applyOpts(); saveOpts(); });
+$('#c-aim').addEventListener('click',()=>{ opts.aim=!opts.aim; applyOpts(); saveOpts(); });
+$('#c-hist').addEventListener('click',()=>{ opts.hist=!opts.hist; applyOpts(); saveOpts(); render(); });
+let lastFile=null;
+$('#btn-export').addEventListener('click',()=>{
+  $('#export-text').value=buildExport();
+  const cv=renderSessionImage();
+  $('#export-img').src=cv.toDataURL('image/png');
+  cv.toBlob(b=>{ if(b) lastFile=new File([b], imgName(), {type:'image/png'}); },'image/png');
+  $('#sheet').classList.add('open');
+});
+$('#btn-share').addEventListener('click',async()=>{
+  if(!lastFile){ toast('準備中…'); return; }
+  try{ if(navigator.canShare && navigator.canShare({files:[lastFile]})){ await navigator.share({files:[lastFile], title:'弓道記録'}); return; } }
+  catch(e){ if(e && e.name==='AbortError') return; }
+  const url=URL.createObjectURL(lastFile); const a=document.createElement('a'); a.href=url; a.download=lastFile.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),4000); toast('画像を保存しました');
+});
+$('#btn-copy').addEventListener('click',async()=>{ try{ await navigator.clipboard.writeText($('#export-text').value); toast('コピーしました'); }catch(e){ $('#export-text').select(); toast('長押しでコピー'); } });
+$('#btn-close').addEventListener('click',()=>$('#sheet').classList.remove('open'));
+
+async function save(){ await Store.set(KEY,sess); }
+function el(tag,a){const e=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const k in a)e.setAttribute(k,a[k]);return e;}
+function avg(a){return a.reduce((x,y)=>x+y,0)/a.length;}
+function sign(n){return (n>=0?'+':'')+n.toFixed(2);}
+function flat(runs){return runs.reduce((a,r)=>a.concat(r),[]);}
+let _tt; function toast(m){ const t=$('#toast'); if(!t) return; t.textContent=m; t.classList.add('show'); clearTimeout(_tt); _tt=setTimeout(()=>t.classList.remove('show'),1600); }
+
+function render(isNew){
+  $('#date').textContent=sess.date;
+  const done=flat(sess.runs);
+  const hits=done.filter(x=>x.hit).length;
+  $('#s-shot').textContent=done.length;
+  $('#s-hit').textContent=hits;
+  $('#s-rate').textContent=done.length?Math.round(hits/done.length*100)+'%':'—';
+  $('#s-tachi').textContent=sess.runs.length;
+
+  const cur=sess.cur;
+  $('#run-shot').textContent=cur.length;
+  $('#run-hit').textContent=cur.filter(x=>x.hit).length;
+  $('#btn-commit').disabled=!cur.length;
+  $('#hint').style.display=cur.length?'none':'flex';
+
+  // ghosts (committed shots) + current bright marks
+  const gh=$('#ghosts'); gh.innerHTML='';
+  if(opts.hist){ done.filter(s=>!s.off).forEach(s=>{
+    gh.appendChild(el('circle',{cx:s.dx,cy:s.dy,r:0.05,
+      fill:s.hit?'var(--hit)':'none',stroke:s.hit?'none':'var(--miss)','stroke-width':0.018,opacity:0.26}));
+  });}
+  const mk=$('#marks'); mk.innerHTML='';
+  const curP=cur.filter(s=>!s.off);
+  curP.forEach((s,i)=>{
+    const last=i===curP.length-1;
+    const c=el('circle',{cx:s.dx,cy:s.dy,r:0.062,fill:s.hit?'var(--hit)':'none',stroke:s.hit?'#fff':'var(--miss)','stroke-width':0.022});
+    c.setAttribute('class','mk'+(last&&isNew?' new':'')); mk.appendChild(c);
+    if(last) mk.appendChild(el('circle',{cx:s.dx,cy:s.dy,r:0.12,fill:'none',stroke:s.hit?'var(--hit)':'var(--miss)','stroke-width':0.02,'stroke-dasharray':'0.06 0.05'}));
+  });
+
+  const t=$('#tendency');
+  const allP=done.filter(s=>!s.off).concat(curP);
+  const off=done.filter(s=>s.off).length+cur.filter(s=>s.off).length;
+  if(allP.length>=3){
+    const mx=avg(allP.map(s=>s.dx)),my=avg(allP.map(s=>s.dy));
+    const h=mx>0.12?'右':mx<-0.12?'左':'',v=my<-0.12?'上':my>0.12?'下':'';
+    t.innerHTML='傾向: <b>'+((v+h)||'中央')+'</b> <span style="opacity:.6">(x'+sign(mx)+' y'+sign(-my)+')</span>'+(off?' ・枠外 '+off:'');
+  } else t.innerHTML=off?'枠外 '+off:'';
+}
+
+function buildExport(){
+  const done=flat(sess.runs),hits=done.filter(x=>x.hit).length;
+  const off=done.filter(x=>x.off).length+sess.cur.filter(x=>x.off).length;
+  const allP=done.filter(s=>!s.off).concat(sess.cur.filter(s=>!s.off));
+  const mx=allP.length?avg(allP.map(s=>s.dx)):0,my=allP.length?avg(allP.map(s=>s.dy)):0;
+  let o=(opts.name&&opts.name.trim()?opts.name.trim()+' — ':'')+'弓道記録 '+sess.date+'\n';
+  o+='射数 '+done.length+' / 中 '+hits+' ('+(done.length?Math.round(hits/done.length*100):0)+'%) / 立 '+sess.runs.length+'\n';
+  o+='枠外 '+off+'\n';
+  o+='傾向 x'+sign(mx)+' y'+sign(-my)+'  (+x=右, +y=上)\n\n';
+  sess.runs.forEach((r,i)=>{
+    const h=r.filter(x=>x.hit).length;
+    o+=(i+1)+'立 ('+r.length+'射 '+h+'中): '+r.map(x=>x.off?'枠外':(x.hit?'中':'外')+'['+(x.dx>=0?'+':'')+x.dx+','+(x.dy>=0?'+':'')+x.dy+']').join('  ')+'\n';
+  });
+  if(sess.cur.length) o+='(未記録 '+sess.cur.length+'射)\n';
+  return o;
+}
+
+function tendDir(mx,my){ const h=mx>0.12?'右':mx<-0.12?'左':''; const v=my<-0.12?'上':my>0.12?'下':''; return (v+h)||'中央'; }
+function imgName(){ const n=(opts.name&&opts.name.trim())?opts.name.trim().replace(/\s+/g,'_')+'_':''; return n+'kyudo_'+sess.date+'.png'; }
+
+const COL={ washi:'#e8e2d3', mato:'#f6f2e9', sumi:'#24211c', ai:'#4a5568', shu:'#c8402c', line:'#c3bba8' };
+function drawFace(ctx,cx,cy,R,detailed){
+  ctx.save();
+  ctx.beginPath(); ctx.arc(cx,cy,R,0,7); ctx.fillStyle=COL.mato; ctx.fill();
+  ctx.lineWidth=Math.max(1,R*0.03); ctx.strokeStyle=COL.sumi; ctx.stroke();
+  ctx.lineWidth=Math.max(1,R*0.02);
+  ctx.beginPath(); ctx.arc(cx,cy,R*0.66,0,7); ctx.stroke();
+  if(detailed){ ctx.beginPath(); ctx.arc(cx,cy,R*0.33,0,7); ctx.stroke(); }
+  ctx.beginPath(); ctx.arc(cx,cy,R*(detailed?0.09:0.12),0,7); ctx.fillStyle=COL.sumi; ctx.fill();
+  ctx.restore();
+}
+function drawShots(ctx,cx,cy,R,shots){
+  shots.forEach(s=>{ if(s.off) return;
+    const x=cx+s.dx*R, y=cy+s.dy*R, r=R*0.055;
+    ctx.beginPath(); ctx.arc(x,y,r,0,7);
+    if(s.hit){ ctx.fillStyle=COL.shu; ctx.fill(); ctx.lineWidth=Math.max(1,R*0.014); ctx.strokeStyle='#fff'; ctx.stroke(); }
+    else { ctx.lineWidth=Math.max(1.5,R*0.022); ctx.strokeStyle=COL.sumi; ctx.stroke(); }
+  });
+}
+function renderSessionImage(){
+  const runs=sess.runs, cur=sess.cur;
+  const allRuns=runs.concat(cur.length?[cur]:[]);
+  const done=flat(runs), hits=done.filter(x=>x.hit).length;
+  const off=done.filter(x=>x.off).length+cur.filter(x=>x.off).length;
+  const plotted=done.filter(s=>!s.off).concat(cur.filter(s=>!s.off));
+  const mx=plotted.length?avg(plotted.map(s=>s.dx)):0, my=plotted.length?avg(plotted.map(s=>s.dy)):0;
+
+  const W=1080, M=48, SUP=2;
+  const bigR=224, bigCy=250+bigR, bigBottom=bigCy+bigR;
+  const cols=3, cellW=(W-2*M)/cols, miniR=104, cellH=miniR*2+70;
+  const n=allRuns.length, rows=Math.ceil(n/cols);
+  const gridTop=bigBottom+92;
+  const H=(n? gridTop+rows*cellH+40 : bigBottom+70);
+
+  const cv=document.createElement('canvas'); cv.width=W*SUP; cv.height=H*SUP;
+  const ctx=cv.getContext('2d'); ctx.scale(SUP,SUP);
+  ctx.fillStyle=COL.washi; ctx.fillRect(0,0,W,H);
+  ctx.textBaseline='alphabetic';
+
+  // header
+  const title=(opts.name&&opts.name.trim()?opts.name.trim()+' — ':'')+'弓道 的中記録';
+  ctx.fillStyle=COL.sumi; ctx.textAlign='left';
+  ctx.font="700 42px -apple-system,'Hiragino Sans','Yu Gothic',sans-serif";
+  ctx.fillText(title, M, 84);
+  ctx.fillStyle=COL.ai; ctx.font="500 27px -apple-system,'Hiragino Sans',sans-serif";
+  const rate=done.length?Math.round(hits/done.length*100):0;
+  ctx.fillText(sess.date+'　射数 '+done.length+' ・ 中 '+hits+' ・ 的中率 '+rate+'% ・ 立 '+runs.length, M, 128);
+  ctx.fillText('傾向 '+tendDir(mx,my)+'　(x'+ (mx>=0?'+':'')+mx.toFixed(2)+' y'+(-my>=0?'+':'')+(-my).toFixed(2)+')'+(off?'　枠外 '+off:''), M, 166);
+
+  // big target
+  ctx.fillStyle=COL.sumi; ctx.font="600 26px -apple-system,'Hiragino Sans',sans-serif";
+  ctx.fillText('全体（ぜんたい）', M, 224);
+  if(opts.aim){ ctx.save(); ctx.strokeStyle=COL.ai; ctx.lineWidth=1.4; ctx.setLineDash([6,5]);
+    ctx.beginPath(); ctx.moveTo(W/2,bigCy-bigR*1.12); ctx.lineTo(W/2,bigCy+bigR*1.12);
+    ctx.moveTo(W/2-bigR*1.12,bigCy); ctx.lineTo(W/2+bigR*1.12,bigCy); ctx.stroke(); ctx.restore(); }
+  drawFace(ctx,W/2,bigCy,bigR,true);
+  drawShots(ctx,W/2,bigCy,bigR,plotted);
+
+  // per-tachi minis
+  if(n){
+    ctx.fillStyle=COL.sumi; ctx.font="600 26px -apple-system,'Hiragino Sans',sans-serif";
+    ctx.fillText('立ごと（たてごと）', M, bigBottom+64);
+    allRuns.forEach((r,i)=>{
+      const col=i%cols, row=Math.floor(i/cols);
+      const cx=M+col*cellW+cellW/2, cy=gridTop+row*cellH+miniR+6;
+      drawFace(ctx,cx,cy,miniR,false);
+      drawShots(ctx,cx,cy,miniR,r);
+      const uncommitted=(cur.length && i===runs.length);
+      const h=r.filter(x=>x.hit).length;
+      const label=uncommitted?('未記録 '+r.length+'射'):((i+1)+'立　'+r.length+'射 '+h+'中');
+      ctx.fillStyle=uncommitted?COL.ai:COL.sumi; ctx.textAlign='center';
+      ctx.font="600 24px -apple-system,'Hiragino Sans',sans-serif";
+      ctx.fillText(label, cx, cy+miniR+40);
+      ctx.textAlign='left';
+    });
+  }
+  return cv;
+}
+
+
+(async function init(){
+  const s=await Store.get(KEY);
+  if(s&&s.runs) sess=s;
+  else { const old=await Store.get('kyudo_session_v1'); if(old&&old.shots) sess={date:old.date||todayStr(),runs:[],cur:old.shots}; }
+  const o=await Store.get('kyudo_opts_v1'); if(o) opts=Object.assign(opts,o);
+  applyOpts();
+  render();
+})();
+</script>
+</body>
+</html>
