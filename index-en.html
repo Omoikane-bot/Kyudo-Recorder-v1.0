@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>弓道 的中記録</title>
+<title>Kyudo Hit Tracker</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="的中記録">
+<meta name="apple-mobile-web-app-title" content="Kyudo Log">
 <meta name="theme-color" content="#e8e2d3">
-<link rel="manifest" href="./manifest.json">
+<link rel="manifest" href="./manifest-en.json">
 <link rel="apple-touch-icon" href="./icon-180.png">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23e8e2d3'/%3E%3Ccircle cx='16' cy='16' r='11' fill='%23f6f2e9' stroke='%2324211c' stroke-width='1.4'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%2324211c' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='2.2' fill='%2324211c'/%3E%3C/svg%3E">
 <style>
@@ -93,19 +93,19 @@
 </head>
 <body>
   <header>
-    <div class="brand"><div class="seal"></div><h1>弓道 的中記録</h1></div>
+    <div class="brand"><div class="seal"></div><h1>Kyudo Hit Tracker</h1></div>
     <div class="hd-right">
-      <input id="name" class="name" placeholder="名前（なまえ）" maxlength="24" autocomplete="name" autocapitalize="words">
+      <input id="name" class="name" placeholder="Name" maxlength="24" autocomplete="name" autocapitalize="words">
       <div class="date" id="date">—</div>
-      <a class="lang" href="./index-en.html">English</a>
+      <a class="lang" href="./index.html">日本語</a>
     </div>
   </header>
 
   <div class="stats">
-    <div class="stat"><div class="n" id="s-shot">0</div><div class="k">射数（しゃすう）</div></div>
-    <div class="stat"><div class="n shu" id="s-hit">0</div><div class="k">中（あたり）</div></div>
-    <div class="stat"><div class="n" id="s-rate">—</div><div class="k">的中率</div></div>
-    <div class="stat"><div class="n" id="s-tachi">0</div><div class="k">立（たち）</div></div>
+    <div class="stat"><div class="n" id="s-shot">0</div><div class="k">Shots</div></div>
+    <div class="stat"><div class="n shu" id="s-hit">0</div><div class="k">Hits</div></div>
+    <div class="stat"><div class="n" id="s-rate">—</div><div class="k">Hit rate</div></div>
+    <div class="stat"><div class="n" id="s-tachi">0</div><div class="k">Tachi</div></div>
   </div>
 
   <div class="field-wrap">
@@ -129,44 +129,44 @@
         <g id="ghosts"></g>
         <g id="marks"></g>
       </svg>
-      <div class="hint" id="hint">この立の矢を<br>タップして入力（にゅうりょく）</div>
+      <div class="hint" id="hint">Tap the mato where<br>each arrow lands</div>
     </div>
     <div class="undertarget">
       <span class="tendency" id="tendency"></span>
     </div>
     <div class="chips">
-      <button class="chip" id="c-face">星的にする</button>
-      <button class="chip" id="c-aim">狙い線（ねらいせん）</button>
-      <button class="chip" id="c-hist">履歴を隠す</button>
+      <button class="chip" id="c-face">Hoshi face</button>
+      <button class="chip" id="c-aim">Aim lines</button>
+      <button class="chip" id="c-hist">Hide history</button>
     </div>
   </div>
 
   <div class="pad">
     <div class="row">
-      <button class="ghost" id="btn-export">書き出し<span class="sub">画像とテキスト</span></button>
-      <button class="ghost" id="btn-new">新しい稽古<span class="sub">保存して開始</span></button>
+      <button class="ghost" id="btn-export">Export<span class="sub">image + text</span></button>
+      <button class="ghost" id="btn-new">New session<span class="sub">save &amp; start fresh</span></button>
     </div>
     <div class="row">
-      <button id="btn-off">枠外（わくがい）<span class="sub">的を外した矢</span></button>
-      <button class="undo" id="btn-undo">戻す<span class="sub">直前を取消</span></button>
+      <button id="btn-off">Off target<span class="sub">missed the mato</span></button>
+      <button class="undo" id="btn-undo">Undo<span class="sub">remove last entry</span></button>
     </div>
-    <div class="runbar" id="runbar">この立（たち）: <b id="run-shot">0</b> 射 ・ <b id="run-hit">0</b> 中</div>
-    <button class="commit" id="btn-commit" disabled>この立を記録<span class="sub">合計に加えて的をクリア</span></button>
+    <div class="runbar" id="runbar">This tachi: <b id="run-shot">0</b> shots · <b id="run-hit">0</b> hits</div>
+    <button class="commit" id="btn-commit" disabled>Record this tachi<span class="sub">add to totals &amp; clear the mato</span></button>
   </div>
 
   <div class="sheet" id="sheet">
     <div class="card">
-      <h2>この稽古の記録</h2>
-      <img id="export-img" class="preview" alt="記録図（きろくず）">
+      <h2>Session record</h2>
+      <img id="export-img" class="preview" alt="Session diagram">
       <div class="row">
-        <button class="commit" style="margin-top:0" id="btn-share">画像を保存・共有</button>
+        <button class="commit" style="margin-top:0" id="btn-share">Save / share image</button>
       </div>
       <details class="txt">
-        <summary>テキストで見る（Claudeに貼り付け用）</summary>
+        <summary>View as text</summary>
         <textarea id="export-text" readonly></textarea>
-        <div class="row"><button class="ghost" id="btn-copy">テキストをコピー</button></div>
+        <div class="row"><button class="ghost" id="btn-copy">Copy text</button></div>
       </details>
-      <div class="row"><button class="ghost" id="btn-close">閉じる</button></div>
+      <div class="row"><button class="ghost" id="btn-close">Close</button></div>
     </div>
   </div>
   <div class="toast" id="toast"></div>
@@ -202,29 +202,29 @@ field.addEventListener('click',e=>{
 $('#btn-off').addEventListener('click',()=>{ sess.cur.push({dx:0,dy:0,hit:false,off:true}); save(); render(true); });
 $('#btn-undo').addEventListener('click',()=>{
   if(sess.cur.length){ sess.cur.pop(); }
-  else if(sess.runs.length){ sess.cur=sess.runs.pop(); toast('前の立を戻しました'); }
+  else if(sess.runs.length){ sess.cur=sess.runs.pop(); toast('Previous tachi restored'); }
   save(); render();
 });
 $('#btn-commit').addEventListener('click',()=>{
   if(!sess.cur.length) return;
   const n=sess.cur.length, h=sess.cur.filter(x=>x.hit).length;
   sess.runs.push(sess.cur); sess.cur=[];
-  save(); render(); toast('記録：'+n+'射 '+h+'中');
+  save(); render(); toast('Recorded: '+n+' shots, '+h+' hits');
 });
 $('#btn-new').addEventListener('click',async()=>{
-  if((sess.runs.length||sess.cur.length) && !confirm('今の稽古を保存して、新しい記録を始めますか？')) return;
+  if((sess.runs.length||sess.cur.length) && !confirm('Save the current session and start a new one?')) return;
   if(sess.cur.length){ sess.runs.push(sess.cur); sess.cur=[]; }
   if(sess.runs.length){ const arch=(await Store.get('kyudo_archive_v2'))||[]; arch.push(sess); await Store.set('kyudo_archive_v2',arch); }
-  sess={date:todayStr(),runs:[],cur:[]}; save(); render(); toast('新しい稽古を開始');
+  sess={date:todayStr(),runs:[],cur:[]}; save(); render(); toast('New session started');
 });
 function saveOpts(){ Store.set('kyudo_opts_v1', opts); }
 function applyOpts(){
   document.getElementById('face-kasumi').style.display = opts.star?'none':'';
   document.getElementById('face-hoshi').style.display = opts.star?'':'none';
   document.getElementById('aim').style.display = opts.aim?'':'none';
-  const cf=$('#c-face'); cf.textContent=opts.star?'霞的にする':'星的にする'; cf.classList.toggle('on',opts.star);
+  const cf=$('#c-face'); cf.textContent=opts.star?'Kasumi face':'Hoshi face'; cf.classList.toggle('on',opts.star);
   $('#c-aim').classList.toggle('on',opts.aim);
-  const ch=$('#c-hist'); ch.textContent=opts.hist?'履歴を隠す':'履歴を表示'; ch.classList.toggle('on',!opts.hist);
+  const ch=$('#c-hist'); ch.textContent=opts.hist?'Hide history':'Show history'; ch.classList.toggle('on',!opts.hist);
   const ne=$('#name'); if(ne && document.activeElement!==ne) ne.value=opts.name||'';
 }
 let _nt; $('#name').addEventListener('input',e=>{ opts.name=e.target.value; clearTimeout(_nt); _nt=setTimeout(saveOpts,400); });
@@ -240,12 +240,12 @@ $('#btn-export').addEventListener('click',()=>{
   $('#sheet').classList.add('open');
 });
 $('#btn-share').addEventListener('click',async()=>{
-  if(!lastFile){ const c2=renderSessionImage(); const b2=await new Promise(r=>c2.toBlob(r,'image/png')); if(!b2){ toast('画像の生成に失敗'); return; } lastFile=new File([b2], imgName(), {type:'image/png'}); }
-  try{ if(navigator.canShare && navigator.canShare({files:[lastFile]})){ await navigator.share({files:[lastFile], title:'弓道記録'}); return; } }
+  if(!lastFile){ const c2=renderSessionImage(); const b2=await new Promise(r=>c2.toBlob(r,'image/png')); if(!b2){ toast('Could not create image'); return; } lastFile=new File([b2], imgName(), {type:'image/png'}); }
+  try{ if(navigator.canShare && navigator.canShare({files:[lastFile]})){ await navigator.share({files:[lastFile], title:'Kyudo record'}); return; } }
   catch(e){ if(e && e.name==='AbortError') return; }
-  const url=URL.createObjectURL(lastFile); const a=document.createElement('a'); a.href=url; a.download=lastFile.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),4000); toast('画像を保存しました');
+  const url=URL.createObjectURL(lastFile); const a=document.createElement('a'); a.href=url; a.download=lastFile.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),4000); toast('Image saved');
 });
-$('#btn-copy').addEventListener('click',async()=>{ try{ await navigator.clipboard.writeText($('#export-text').value); toast('コピーしました'); }catch(e){ $('#export-text').select(); toast('長押しでコピー'); } });
+$('#btn-copy').addEventListener('click',async()=>{ try{ await navigator.clipboard.writeText($('#export-text').value); toast('Copied'); }catch(e){ $('#export-text').select(); toast('Long-press to copy'); } });
 $('#btn-close').addEventListener('click',()=>$('#sheet').classList.remove('open'));
 
 async function save(){ await Store.set(KEY,sess); }
@@ -290,9 +290,8 @@ function render(isNew){
   const off=done.filter(s=>s.off).length+cur.filter(s=>s.off).length;
   if(allP.length>=3){
     const mx=avg(allP.map(s=>s.dx)),my=avg(allP.map(s=>s.dy));
-    const h=mx>0.12?'右':mx<-0.12?'左':'',v=my<-0.12?'上':my>0.12?'下':'';
-    t.innerHTML='傾向: <b>'+((v+h)||'中央')+'</b> <span style="opacity:.6">(x'+sign(mx)+' y'+sign(-my)+')</span>'+(off?' ・枠外 '+off:'');
-  } else t.innerHTML=off?'枠外 '+off:'';
+    t.innerHTML='Tendency: <b>'+tendDir(mx,my)+'</b> <span style="opacity:.6">(x'+sign(mx)+' y'+sign(-my)+')</span>'+(off?' · off-target '+off:'');
+  } else t.innerHTML=off?'Off-target '+off:'';
 }
 
 function buildExport(){
@@ -300,19 +299,19 @@ function buildExport(){
   const off=done.filter(x=>x.off).length+sess.cur.filter(x=>x.off).length;
   const allP=done.filter(s=>!s.off).concat(sess.cur.filter(s=>!s.off));
   const mx=allP.length?avg(allP.map(s=>s.dx)):0,my=allP.length?avg(allP.map(s=>s.dy)):0;
-  let o=(opts.name&&opts.name.trim()?opts.name.trim()+' — ':'')+'弓道記録 '+sess.date+'\n';
-  o+='射数 '+done.length+' / 中 '+hits+' ('+(done.length?Math.round(hits/done.length*100):0)+'%) / 立 '+sess.runs.length+'\n';
-  o+='枠外 '+off+'\n';
-  o+='傾向 x'+sign(mx)+' y'+sign(-my)+'  (+x=右, +y=上)\n\n';
+  let o=(opts.name&&opts.name.trim()?opts.name.trim()+' — ':'')+'Kyudo record '+sess.date+'\n';
+  o+='Shots '+done.length+' / Hits '+hits+' ('+(done.length?Math.round(hits/done.length*100):0)+'%) / Tachi '+sess.runs.length+'\n';
+  o+='Off-target '+off+'\n';
+  o+='Tendency x'+sign(mx)+' y'+sign(-my)+'  (+x=right, +y=up)\n\n';
   sess.runs.forEach((r,i)=>{
     const h=r.filter(x=>x.hit).length;
-    o+=(i+1)+'立 ('+r.length+'射 '+h+'中): '+r.map(x=>x.off?'枠外':(x.hit?'中':'外')+'['+(x.dx>=0?'+':'')+x.dx+','+(x.dy>=0?'+':'')+x.dy+']').join('  ')+'\n';
+    o+='Tachi '+(i+1)+' ('+r.length+' shots '+h+' hits): '+r.map(x=>x.off?'off':(x.hit?'hit':'miss')+'['+(x.dx>=0?'+':'')+x.dx+','+(x.dy>=0?'+':'')+x.dy+']').join('  ')+'\n';
   });
-  if(sess.cur.length) o+='(未記録 '+sess.cur.length+'射)\n';
+  if(sess.cur.length) o+='(unrecorded '+sess.cur.length+' shots)\n';
   return o;
 }
 
-function tendDir(mx,my){ const h=mx>0.12?'右':mx<-0.12?'左':''; const v=my<-0.12?'上':my>0.12?'下':''; return (v+h)||'中央'; }
+function tendDir(mx,my){ const h=mx>0.12?'right':mx<-0.12?'left':''; const v=my<-0.12?'high':my>0.12?'low':''; return (v&&h)?v+'-'+h:(v||h||'centre'); }
 function imgName(){ const n=(opts.name&&opts.name.trim())?opts.name.trim().replace(/[\\\/:*?"<>|\s]+/g,'_')+'_':''; return n+'kyudo_'+sess.date+'.png'; }
 
 const COL={ washi:'#e8e2d3', mato:'#f6f2e9', sumi:'#24211c', ai:'#4a5568', shu:'#c8402c', line:'#c3bba8' };
@@ -355,18 +354,18 @@ function renderSessionImage(){
   ctx.textBaseline='alphabetic';
 
   // header
-  const title=(opts.name&&opts.name.trim()?opts.name.trim()+' — ':'')+'弓道 的中記録';
+  const title=(opts.name&&opts.name.trim()?opts.name.trim()+' — ':'')+'Kyudo Hit Record';
   ctx.fillStyle=COL.sumi; ctx.textAlign='left';
   ctx.font="700 42px -apple-system,'Hiragino Sans','Yu Gothic',sans-serif";
   ctx.fillText(title, M, 84);
   ctx.fillStyle=COL.ai; ctx.font="500 27px -apple-system,'Hiragino Sans',sans-serif";
   const rate=done.length?Math.round(hits/done.length*100):0;
-  ctx.fillText(sess.date+'　射数 '+done.length+' ・ 中 '+hits+' ・ 的中率 '+rate+'% ・ 立 '+runs.length, M, 128);
-  ctx.fillText('傾向 '+tendDir(mx,my)+'　(x'+ (mx>=0?'+':'')+mx.toFixed(2)+' y'+(-my>=0?'+':'')+(-my).toFixed(2)+')'+(off?'　枠外 '+off:''), M, 166);
+  ctx.fillText(sess.date+' · Shots '+done.length+' · Hits '+hits+' · '+rate+'% · Tachi '+runs.length, M, 128);
+  ctx.fillText('Tendency '+tendDir(mx,my)+' (x'+ (mx>=0?'+':'')+mx.toFixed(2)+' y'+(-my>=0?'+':'')+(-my).toFixed(2)+')'+(off?' · off-target '+off:''), M, 166);
 
   // big target
   ctx.fillStyle=COL.sumi; ctx.font="600 26px -apple-system,'Hiragino Sans',sans-serif";
-  ctx.fillText('全体（ぜんたい）', M, 224);
+  ctx.fillText('All shots', M, 224);
   if(opts.aim){ ctx.save(); ctx.strokeStyle=COL.ai; ctx.lineWidth=1.4; ctx.setLineDash([6,5]);
     ctx.beginPath(); ctx.moveTo(W/2,bigCy-bigR*1.12); ctx.lineTo(W/2,bigCy+bigR*1.12);
     ctx.moveTo(W/2-bigR*1.12,bigCy); ctx.lineTo(W/2+bigR*1.12,bigCy); ctx.stroke(); ctx.restore(); }
@@ -376,7 +375,7 @@ function renderSessionImage(){
   // per-tachi minis
   if(n){
     ctx.fillStyle=COL.sumi; ctx.font="600 26px -apple-system,'Hiragino Sans',sans-serif";
-    ctx.fillText('立ごと（たてごと）', M, bigBottom+64);
+    ctx.fillText('Per tachi', M, bigBottom+64);
     allRuns.forEach((r,i)=>{
       const col=i%cols, row=Math.floor(i/cols);
       const cx=M+col*cellW+cellW/2, cy=gridTop+row*cellH+miniR+6;
@@ -384,7 +383,7 @@ function renderSessionImage(){
       drawShots(ctx,cx,cy,miniR,r);
       const uncommitted=(cur.length && i===runs.length);
       const h=r.filter(x=>x.hit).length;
-      const label=uncommitted?('未記録 '+r.length+'射'):((i+1)+'立　'+r.length+'射 '+h+'中');
+      const label=uncommitted?('Unrecorded · '+r.length+' shots'):('Tachi '+(i+1)+' · '+r.length+' shots '+h+' hits');
       ctx.fillStyle=uncommitted?COL.ai:COL.sumi; ctx.textAlign='center';
       ctx.font="600 24px -apple-system,'Hiragino Sans',sans-serif";
       ctx.fillText(label, cx, cy+miniR+40);
